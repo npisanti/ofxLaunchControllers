@@ -27,8 +27,8 @@ You can also bind a knob to multiple values:
    
 You can map buttons to floats, int or bool and  they will lit to give you visual feedback. Here some useful methods:   
 ```cpp
-	lc.momentary( 1, yourFloatParameter, 0.2f, 1.1f ); // second button, first value when pressed, second when released
-    lc.toggle( 2, yourBoolParameter );  // third button, on/off toggle
+    lc.momentary( 1, yourFloatParameter, 0.2f, 1.1f ); // second button, 1.1 when pressed, 0.2 when released
+    lc.toggle( 2, yourBoolParameter );  // third button, true/false toggle
     lc.radio( 4, 7, yourIntValue );   // button from the fifth to the last mapped as radio button to an int value
 ```   
 
