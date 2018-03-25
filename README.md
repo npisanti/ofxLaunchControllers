@@ -15,7 +15,7 @@ now values ranging from 0.1 to 23.5 are assigned to your parameter when you turn
    
 On the Launch Control XL you also have a `fader` method, that works in the same way as `knob`:   
 ```cpp
-    lc.fader( 3, yourParameter ); // maps the fourth fader to your parameter
+    lcXL.fader( 3, yourParameter ); // maps the fourth fader to your parameter
 ```   
    
 You can also bind a knob to multiple values:   

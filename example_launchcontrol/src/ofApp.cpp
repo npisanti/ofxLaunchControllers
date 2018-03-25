@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
-	// gui setup -------------------------------------
+    // gui setup -------------------------------------
     gui.setup("", "settings.xml", 20, 20 );
     gui.add( testBool.set("test bool", false) );
     gui.add( testFloat0.set( "test float 0 moment", 0.3f, 0.0f, 1.5f) );
@@ -14,7 +14,7 @@ void ofApp::setup(){
     gui.add( testInt3.set( "test int 3 knob again", 0, 0, 100   ) );
 
 
-	// control bindings ------------------------------	
+    // control bindings ------------------------------
     //lc.listDevices();
     //lc.setup(1);
     lc.setup(); // setup with automatic id finding   
@@ -50,7 +50,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-	lc.close(); // remember to close the midi ports
+    lc.close(); // remember to close the midi ports
 }
 
 //--------------------------------------------------------------
