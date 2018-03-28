@@ -407,7 +407,7 @@ ofxControllerBase::RadioGroup::RadioGroup( const RadioGroup & other) {
 
 
 void ofxControllerBase::knob( int index, ofParameter<float> & param, float min, float max ) {
-    if(index>=0 && index<(int)knobs.size()){
+    if(index>=0 && index<(int)knobs.size() ){
         knobs[index].emplace_back();
         knobs[index].back().controlNum = knobsCC[index];
         knobs[index].back().typeCode = 2; 
@@ -417,12 +417,12 @@ void ofxControllerBase::knob( int index, ofParameter<float> & param, float min, 
         knobs[index].back().value = param;
         knobs[index].back().z1 = param;
     }else{
-		ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
+		if(midiIn.isOpen()) ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
 	}
 }
 
 void ofxControllerBase::knob( int index, ofParameter<int> & param, int min, int max ) {
-    if(index>=0 && index<(int)knobs.size()){
+    if(index>=0 && index<(int)knobs.size() ){
         knobs[index].emplace_back();
         knobs[index].back().controlNum = knobsCC[index];
         knobs[index].back().typeCode = 3;
@@ -432,7 +432,7 @@ void ofxControllerBase::knob( int index, ofParameter<int> & param, int min, int 
         knobs[index].back().value = (float) param;
         knobs[index].back().z1 = (float) param;
     }else{
-		ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
+		if(midiIn.isOpen()) ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
 	}
 }
 
