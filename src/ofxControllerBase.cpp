@@ -38,7 +38,7 @@ void ofxControllerBase::setup( int port, int channel ) {
 
 
 void ofxControllerBase::update( ofEventArgs & events ){
-    
+    cout<<"launch controls update is running\n";
     if(bUpdate){
 		
 		midilock.lock();
@@ -243,57 +243,62 @@ ofxControllerBase::Binding::Binding(const Binding & other) {
 }
 
 void ofxControllerBase::button( int index, ofParameter<bool> & param, bool momentary ) {
-    if(index>=0 && index<(int)buttons.size()){
-        buttons[index].typeCode = 1; 
-        buttons[index].pParamb = &param;
-        if( momentary ){
-            buttons[index].buttonMode = 1;
+    if( midiIn.isOpen ){
+        if(index>=0 && index<(int)buttons.size() ){
+            buttons[index].typeCode = 1; 
+            buttons[index].pParamb = &param;
+            if( momentary ){
+                buttons[index].buttonMode = 1;
+            }else{
+                buttons[index].buttonMode = 0;
+            }
+            param.addListener( this, &ofxControllerBase::buttonChangedB );
+            refreshLeds();
         }else{
-            buttons[index].buttonMode = 0;
+            ofLogError() << "ofxLaunchControls: wrong indices for button(), momentary() or toggle() function, binding ignored";
         }
-        param.addListener( this, &ofxControllerBase::buttonChangedB );
-		refreshLeds();
-    }else{
-		ofLogError() << "ofxLaunchControls: wrong indices for button(), momentary() or toggle() function, binding ignored";
-	}
+    }
 }
 
 void ofxControllerBase::button( int index, ofParameter<float> & param, float min, float max, bool momentary ) {
-    if(index>=0 && index<(int)buttons.size()){
-        buttons[index].typeCode = 2; 
-        buttons[index].pParamf = &param;
-        buttons[index].maxf = max;
-        buttons[index].minf = min;
-        if( momentary ){
-            buttons[index].buttonMode = 1;
+    if( midiIn.isOpen ){
+        if(index>=0 && index<(int)buttons.size()){
+            buttons[index].typeCode = 2; 
+            buttons[index].pParamf = &param;
+            buttons[index].maxf = max;
+            buttons[index].minf = min;
+            if( momentary ){
+                buttons[index].buttonMode = 1;
+            }else{
+                buttons[index].buttonMode = 0;
+            }
+            
+            param.addListener( this, &ofxControllerBase::buttonChangedF );
+            refreshLeds();
         }else{
-            buttons[index].buttonMode = 0;
+            ofLogError() << "ofxLaunchControls: wrong indices for button(), momentary() or toggle() function, binding ignored";
         }
-        
-        param.addListener( this, &ofxControllerBase::buttonChangedF );
-		refreshLeds();
-    }else{
-		ofLogError() << "ofxLaunchControls: wrong indices for button(), momentary() or toggle() function, binding ignored";
-	}
-
+    }
 }
 
 void ofxControllerBase::button( int index, ofParameter<int> & param, int min, int max, bool momentary ) {
-    if(index>=0 && index<(int)buttons.size()){
-        buttons[index].typeCode = 3; 
-        buttons[index].pParami = &param;
-        buttons[index].maxi = max;
-        buttons[index].mini = min;
-        if( momentary ){
-            buttons[index].buttonMode = 1;
+    if( midiIn.isOpen ){
+        if(index>=0 && index<(int)buttons.size() ){
+            buttons[index].typeCode = 3; 
+            buttons[index].pParami = &param;
+            buttons[index].maxi = max;
+            buttons[index].mini = min;
+            if( momentary ){
+                buttons[index].buttonMode = 1;
+            }else{
+                buttons[index].buttonMode = 0;
+            }
+            param.addListener( this, &ofxControllerBase::buttonChangedI );
+            refreshLeds();
         }else{
-            buttons[index].buttonMode = 0;
+            ofLogError() << "ofxLaunchControls: wrong indices for button(), momentary() or toggle() function, binding ignored";
         }
-        param.addListener( this, &ofxControllerBase::buttonChangedI );
-        refreshLeds();
-    }else{
-		ofLogError() << "ofxLaunchControls: wrong indices for button(), momentary() or toggle() function, binding ignored";
-	}
+    }
 }
 
 // remember to change midi channel 
@@ -354,37 +359,37 @@ void ofxControllerBase::clearLeds() {
 }
 
 void ofxControllerBase::radio( int indexMin, int indexMax, ofParameter<int> & param, int color ) {
- 
-    if ( indexMin >=0 && indexMax<=(int)buttons.size() && indexMin<=indexMax ) {
+    if( midiIn.isOpen ){
+        if ( indexMin >=0 && indexMax<=(int)buttons.size() && indexMin<=indexMax ) {
 
-        radios.emplace_back();
-        radios.back().min = indexMin;
-        radios.back().max = indexMax;
+            radios.emplace_back();
+            radios.back().min = indexMin;
+            radios.back().max = indexMax;
 
-        radios.back().pParami = &param;
-        radios.back().bUpdate = false;
-        radios.back().color = color; 
-        
-        int val = param;
-        if(val<0) val = 0;
-        int max = indexMax-indexMin;
-        if(val>max) val = max; 
+            radios.back().pParami = &param;
+            radios.back().bUpdate = false;
+            radios.back().color = color; 
+            
+            int val = param;
+            if(val<0) val = 0;
+            int max = indexMax-indexMin;
+            if(val>max) val = max; 
 
-        radios.back().value = val;
-        
-        for( int b = indexMin; b<=indexMax; ++b ){
-            buttons[b].buttonMode = 2;
-            buttons[b].typeCode = 4;
-            buttons[b].radioValue = b-indexMin; // radio value that the button will set
-            buttons[b].radioGroup = radios.size()-1;
-        }        
-        param.addListener( this, &ofxControllerBase::radioChanged );
+            radios.back().value = val;
+            
+            for( int b = indexMin; b<=indexMax; ++b ){
+                buttons[b].buttonMode = 2;
+                buttons[b].typeCode = 4;
+                buttons[b].radioValue = b-indexMin; // radio value that the button will set
+                buttons[b].radioGroup = radios.size()-1;
+            }        
+            param.addListener( this, &ofxControllerBase::radioChanged );
 
-		refreshLeds();
-    }else{
-		ofLogError() << "ofxLaunchControls: wrong indices for radio() function, binding ignored";
-	}
-
+            refreshLeds();
+        }else{
+            ofLogError() << "ofxLaunchControls: wrong indices for radio() function, binding ignored";
+        }
+    }
 }
 
 ofxControllerBase::RadioGroup::RadioGroup( ) { 
@@ -407,33 +412,37 @@ ofxControllerBase::RadioGroup::RadioGroup( const RadioGroup & other) {
 
 
 void ofxControllerBase::knob( int index, ofParameter<float> & param, float min, float max ) {
-    if(index>=0 && index<(int)knobs.size() ){
-        knobs[index].emplace_back();
-        knobs[index].back().controlNum = knobsCC[index];
-        knobs[index].back().typeCode = 2; 
-        knobs[index].back().pParamf = &param;
-        knobs[index].back().maxf = max;
-        knobs[index].back().minf = min;
-        knobs[index].back().value = param;
-        knobs[index].back().z1 = param;
-    }else{
-		if(midiIn.isOpen()) ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
-	}
+    if( midiIn.isOpen() ){
+        if(index>=0 && index<(int)knobs.size() ){
+            knobs[index].emplace_back();
+            knobs[index].back().controlNum = knobsCC[index];
+            knobs[index].back().typeCode = 2; 
+            knobs[index].back().pParamf = &param;
+            knobs[index].back().maxf = max;
+            knobs[index].back().minf = min;
+            knobs[index].back().value = param;
+            knobs[index].back().z1 = param;
+        }else{
+            ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
+        }
+    }
 }
 
 void ofxControllerBase::knob( int index, ofParameter<int> & param, int min, int max ) {
-    if(index>=0 && index<(int)knobs.size() ){
-        knobs[index].emplace_back();
-        knobs[index].back().controlNum = knobsCC[index];
-        knobs[index].back().typeCode = 3;
-        knobs[index].back().pParami = &param;
-        knobs[index].back().maxi = max;
-        knobs[index].back().mini = min;
-        knobs[index].back().value = (float) param;
-        knobs[index].back().z1 = (float) param;
-    }else{
-		if(midiIn.isOpen()) ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
-	}
+    if( midiIn.isOpen() ){
+        if(index>=0 && index<(int)knobs.size() ){
+            knobs[index].emplace_back();
+            knobs[index].back().controlNum = knobsCC[index];
+            knobs[index].back().typeCode = 3;
+            knobs[index].back().pParami = &param;
+            knobs[index].back().maxi = max;
+            knobs[index].back().mini = min;
+            knobs[index].back().value = (float) param;
+            knobs[index].back().z1 = (float) param;
+        }else{
+            ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
+        }     
+    }
 }
 
 
