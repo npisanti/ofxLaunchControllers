@@ -243,7 +243,7 @@ ofxControllerBase::Binding::Binding(const Binding & other) {
 }
 
 void ofxControllerBase::button( int index, ofParameter<bool> & param, bool momentary ) {
-    if( midiIn.isOpen ){
+    if( midiIn.isOpen() ){
         if(index>=0 && index<(int)buttons.size() ){
             buttons[index].typeCode = 1; 
             buttons[index].pParamb = &param;
@@ -261,7 +261,7 @@ void ofxControllerBase::button( int index, ofParameter<bool> & param, bool momen
 }
 
 void ofxControllerBase::button( int index, ofParameter<float> & param, float min, float max, bool momentary ) {
-    if( midiIn.isOpen ){
+    if( midiIn.isOpen() ){
         if(index>=0 && index<(int)buttons.size()){
             buttons[index].typeCode = 2; 
             buttons[index].pParamf = &param;
@@ -282,7 +282,7 @@ void ofxControllerBase::button( int index, ofParameter<float> & param, float min
 }
 
 void ofxControllerBase::button( int index, ofParameter<int> & param, int min, int max, bool momentary ) {
-    if( midiIn.isOpen ){
+    if( midiIn.isOpen() ){
         if(index>=0 && index<(int)buttons.size() ){
             buttons[index].typeCode = 3; 
             buttons[index].pParami = &param;
@@ -359,7 +359,7 @@ void ofxControllerBase::clearLeds() {
 }
 
 void ofxControllerBase::radio( int indexMin, int indexMax, ofParameter<int> & param, int color ) {
-    if( midiIn.isOpen ){
+    if( midiIn.isOpen() ){
         if ( indexMin >=0 && indexMax<=(int)buttons.size() && indexMin<=indexMax ) {
 
             radios.emplace_back();
