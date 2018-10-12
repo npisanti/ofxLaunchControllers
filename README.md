@@ -29,7 +29,7 @@ You can map buttons to floats, int or bool and  they will lit to give you visual
 ```cpp
     lc.momentary( 1, yourFloatParameter, 0.2f, 1.1f ); // second button, 1.1 when pressed, 0.2 when released
     lc.toggle( 2, yourBoolParameter );  // third button, true/false toggle
-    lc.radio( 4, 7, yourIntValue );   // button from the fifth to the last mapped as radio button to an int value
+    lc.radio( 4, 7, yourIntValue );   // buttons 4-5-6-7 mapped as radio buttons to int values 0-1-2-3
 ```   
 
 The movement of the knobs is also slewed using a simple easing algorhytm. By default the easing value is 0.5, you can also set it or deactivate it:   

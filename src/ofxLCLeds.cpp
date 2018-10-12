@@ -8,7 +8,7 @@ ofxLCLeds::ofxLCLeds() {
 }
 
 void ofxLCLeds::setup( int midiOutId, int midiChannel ) {
-    midiOut.listPorts(); // via instance
+    midiOut.listOutPorts(); // via instance
     midiOut.openPort(midiOutId); // by number
     channel = midiChannel;
     if( midiOut.isOpen()){
@@ -18,7 +18,7 @@ void ofxLCLeds::setup( int midiOutId, int midiChannel ) {
 }
 
 void ofxLCLeds::exit( ofEventArgs &args ) {
-    midiOut.closePort();        
+    midiOut.closePort();
 }
 
 void ofxLCLeds::led( int i, int color ) {
@@ -48,10 +48,9 @@ bool ofxLCLeds::press( const ofxMidiMessage & msg, int & indexToReturn  ) {
 void ofxLCLeds::combo( int active, int start, int stop, int color ) {
     for( int i=start; i<=stop; ++i ){
         if( i!=active ){
-            led( i, ofxLCLeds::Off );            
+            led( i, ofxLCLeds::Off );
         }else{
             led( i, color );
         }
     }
 }
-

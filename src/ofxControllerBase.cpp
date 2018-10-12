@@ -6,45 +6,45 @@ ofxControllerBase::ofxControllerBase(){
 }
 
 void ofxControllerBase::listDevices() {
-    midiIn.listPorts();
+    midiIn.listInPorts();
 }
 
 
 void ofxControllerBase::setup( int port, int channel ) {
-    
+
     this->channel = channel;
     buttonsColor = ofxLCLeds::Red;
-    
+
     knobs.resize(knobsCC.size());
-    
+
     radios.clear();
 	midiIn.openPort( port );
-    
+
     if( midiIn.isOpen() ){
         midiIn.addListener(this);
-        leds.openPort( port );       
-        ofLogNotice() << "ofxLaunchControls: " << name << " activated!"; 
+        leds.openPort( port );
+        ofLogNotice() << "ofxLaunchControls: " << name << " activated!";
     }
-    
+
     bEasing = false;
     easeAmount = 0.05f;
-    
+
     bUpdate = false;
 
     clearLeds();
-        
-    ofAddListener( ofEvents().update, this, &ofxControllerBase::update);  
+
+    ofAddListener( ofEvents().update, this, &ofxControllerBase::update);
 }
 
 
 void ofxControllerBase::update( ofEventArgs & events ){
     cout<<"launch controls update is running\n";
     if(bUpdate){
-		
+
 		midilock.lock();
-		
+
 		bUpdate = false;
-		
+
         // buttons update
         for( size_t b = 0; b<buttons.size(); ++b ){
             if( buttons[b].bUpdate ) {
@@ -52,15 +52,15 @@ void ofxControllerBase::update( ofEventArgs & events ){
                     case 1: // bool
                         *(buttons[b].pParamb) = buttons[b].bActive;
                     break;
-                    
-                    case 2: // float 
+
+                    case 2: // float
                         if( buttons[b].bActive ){
                             *(buttons[b].pParamf) = buttons[b].maxf;
                         }else{
                             *(buttons[b].pParamf) = buttons[b].minf;
                         }
                     break;
-                    
+
                     case 3: // int
                        if( buttons[b].bActive ){
                             *(buttons[b].pParami) = buttons[b].maxi;
@@ -88,7 +88,7 @@ void ofxControllerBase::update( ofEventArgs & events ){
             for( size_t k = 0; k<knobs[i].size(); k++ ) {
                 if( knobs[i][k].bUpdate ) {
                     switch(knobs[i][k].typeCode){
-                        case 2: // float 
+                        case 2: // float
 							if( bEasing ){
 								// lpf code
 								float xn = (knobs[i][k].value*easeAmount + knobs[i][k].z1*(1.0f-easeAmount) );
@@ -106,7 +106,7 @@ void ofxControllerBase::update( ofEventArgs & events ){
 								knobs[i][k].bUpdate = false;
 							}
                         break;
-                        
+
                         case 3: // int
 							if( bEasing ){
 								// lpf code
@@ -126,32 +126,32 @@ void ofxControllerBase::update( ofEventArgs & events ){
 							}
                         break;
                     }
-                }                                
+                }
             }
         }
 
-        midilock.unlock();		
+        midilock.unlock();
         // update leds
         refreshLeds();
     }
-    
+
 }
 
 void ofxControllerBase::newMidiMessage( ofxMidiMessage& msg ) {
-    
+
     midilock.lock();
     bUpdate = true;
-    
+
     switch( msg.status ){
         case MIDI_CONTROL_CHANGE:
             for ( size_t i=0; i<knobs.size(); ++i ) {
                 for( size_t k = 0; k<knobs[i].size(); k++ ) {
                     if( msg.control==knobs[i][k].controlNum && knobs[i][k].typeCode>0 ) {
 						switch(knobs[i][k].typeCode){
-							case 2: // float 
+							case 2: // float
 								knobs[i][k].value = ofMap( msg.value, 0, 127, knobs[i][k].minf, knobs[i][k].maxf);
 							break;
-							
+
 							case 3: // int
 								knobs[i][k].value = ofMap( msg.value, 0, 127, knobs[i][k].mini, knobs[i][k].maxi);
 							break;
@@ -161,8 +161,8 @@ void ofxControllerBase::newMidiMessage( ofxMidiMessage& msg ) {
                 }
             }
         break;
-                
-        case MIDI_NOTE_ON: 
+
+        case MIDI_NOTE_ON:
             for( size_t b = 0; b<buttons.size(); ++b ){
                 if( msg.pitch == buttons[b].controlNum && buttons[b].typeCode>0 ){
                     switch( buttons[b].buttonMode ){
@@ -170,22 +170,22 @@ void ofxControllerBase::newMidiMessage( ofxMidiMessage& msg ) {
                             buttons[b].bActive = buttons[b].bActive ? false : true;
                             buttons[b].bUpdate = true;
                         break;
-                        
+
                         case 1: // momentary
                             buttons[b].bActive = true;
                             buttons[b].bUpdate = true;
                         break;
-                        
+
                         case 2: // radio
                             radios[buttons[b].radioGroup].value = buttons[b].radioValue;
                             radios[buttons[b].radioGroup].bUpdate = true;
                         break;
-                    }                    
+                    }
                 }
             }
         break;
-        
-        case MIDI_NOTE_OFF: 
+
+        case MIDI_NOTE_OFF:
             for( size_t b = 0; b<buttons.size(); ++b ){
                 if( msg.pitch == buttons[b].controlNum && buttons[b].typeCode>0 ){
                     if( buttons[b].buttonMode == 1 ) { // momentary
@@ -195,15 +195,15 @@ void ofxControllerBase::newMidiMessage( ofxMidiMessage& msg ) {
                 }
             }
         break;
-        
+
         default: break;
     }
-    
+
     midilock.unlock();
 }
 
 
-// init values 
+// init values
 ofxControllerBase::Binding::Binding() {
     controlNum = -1;
     typeCode = 0;
@@ -245,7 +245,7 @@ ofxControllerBase::Binding::Binding(const Binding & other) {
 void ofxControllerBase::button( int index, ofParameter<bool> & param, bool momentary ) {
     if( midiIn.isOpen() ){
         if(index>=0 && index<(int)buttons.size() ){
-            buttons[index].typeCode = 1; 
+            buttons[index].typeCode = 1;
             buttons[index].pParamb = &param;
             if( momentary ){
                 buttons[index].buttonMode = 1;
@@ -263,7 +263,7 @@ void ofxControllerBase::button( int index, ofParameter<bool> & param, bool momen
 void ofxControllerBase::button( int index, ofParameter<float> & param, float min, float max, bool momentary ) {
     if( midiIn.isOpen() ){
         if(index>=0 && index<(int)buttons.size()){
-            buttons[index].typeCode = 2; 
+            buttons[index].typeCode = 2;
             buttons[index].pParamf = &param;
             buttons[index].maxf = max;
             buttons[index].minf = min;
@@ -272,7 +272,7 @@ void ofxControllerBase::button( int index, ofParameter<float> & param, float min
             }else{
                 buttons[index].buttonMode = 0;
             }
-            
+
             param.addListener( this, &ofxControllerBase::buttonChangedF );
             refreshLeds();
         }else{
@@ -284,7 +284,7 @@ void ofxControllerBase::button( int index, ofParameter<float> & param, float min
 void ofxControllerBase::button( int index, ofParameter<int> & param, int min, int max, bool momentary ) {
     if( midiIn.isOpen() ){
         if(index>=0 && index<(int)buttons.size() ){
-            buttons[index].typeCode = 3; 
+            buttons[index].typeCode = 3;
             buttons[index].pParami = &param;
             buttons[index].maxi = max;
             buttons[index].mini = min;
@@ -301,26 +301,26 @@ void ofxControllerBase::button( int index, ofParameter<int> & param, int min, in
     }
 }
 
-// remember to change midi channel 
+// remember to change midi channel
 void ofxControllerBase::refreshLeds() {
-    
+
     for( size_t b = 0; b<buttons.size(); ++b ){
-        
+
         if( buttons[b].typeCode>0 && buttons[b].typeCode!=4 ){
-            
+
             switch(buttons[b].typeCode){
                 case 1: // bool
                     buttons[b].bActive = *(buttons[b].pParamb);
                 break;
-                
-                case 2: // float 
+
+                case 2: // float
                     if( *(buttons[b].pParamf) > buttons[b].minf ){
                         buttons[b].bActive = true;
                     }else{
                         buttons[b].bActive = false;
                     }
                 break;
-                
+
                 case 3: // int
                     if( *(buttons[b].pParami) > buttons[b].mini ){
                         buttons[b].bActive = true;
@@ -334,12 +334,12 @@ void ofxControllerBase::refreshLeds() {
                 leds.sendNoteOn( channel, buttons[b].controlNum, ofxLCLeds::colors[buttonsColor] );
             }else{
                 leds.sendNoteOn( channel, buttons[b].controlNum, ofxLCLeds::colors[ 0 ] );
-            }            
+            }
 
             buttons[b].bUpdate = false;
         }
     }
-    
+
     for( size_t i = 0; i<radios.size(); ++i ){
         for ( int k=radios[i].min; k<=radios[i].max; ++k ) {
             if( k== *(radios[i].pParami) + radios[i].min ){
@@ -349,13 +349,13 @@ void ofxControllerBase::refreshLeds() {
             }
         }
     }
-    
+
 }
 
 void ofxControllerBase::clearLeds() {
     for( size_t b = 0; b<buttons.size(); ++b ){
 		leds.sendNoteOn( channel, buttons[b].controlNum, ofxLCLeds::colors[ 0 ] );
-    }    
+    }
 }
 
 void ofxControllerBase::radio( int indexMin, int indexMax, ofParameter<int> & param, int color ) {
@@ -368,21 +368,21 @@ void ofxControllerBase::radio( int indexMin, int indexMax, ofParameter<int> & pa
 
             radios.back().pParami = &param;
             radios.back().bUpdate = false;
-            radios.back().color = color; 
-            
+            radios.back().color = color;
+
             int val = param;
             if(val<0) val = 0;
             int max = indexMax-indexMin;
-            if(val>max) val = max; 
+            if(val>max) val = max;
 
             radios.back().value = val;
-            
+
             for( int b = indexMin; b<=indexMax; ++b ){
                 buttons[b].buttonMode = 2;
                 buttons[b].typeCode = 4;
                 buttons[b].radioValue = b-indexMin; // radio value that the button will set
                 buttons[b].radioGroup = radios.size()-1;
-            }        
+            }
             param.addListener( this, &ofxControllerBase::radioChanged );
 
             refreshLeds();
@@ -392,7 +392,7 @@ void ofxControllerBase::radio( int indexMin, int indexMax, ofParameter<int> & pa
     }
 }
 
-ofxControllerBase::RadioGroup::RadioGroup( ) { 
+ofxControllerBase::RadioGroup::RadioGroup( ) {
     min = 0;
     max = 0;
     value = 0;
@@ -401,7 +401,7 @@ ofxControllerBase::RadioGroup::RadioGroup( ) {
     color = 0;
 }
 
-ofxControllerBase::RadioGroup::RadioGroup( const RadioGroup & other) { 
+ofxControllerBase::RadioGroup::RadioGroup( const RadioGroup & other) {
     min = other.min;
     max = other.max;
     value.store(other.value);
@@ -416,7 +416,7 @@ void ofxControllerBase::knob( int index, ofParameter<float> & param, float min, 
         if(index>=0 && index<(int)knobs.size() ){
             knobs[index].emplace_back();
             knobs[index].back().controlNum = knobsCC[index];
-            knobs[index].back().typeCode = 2; 
+            knobs[index].back().typeCode = 2;
             knobs[index].back().pParamf = &param;
             knobs[index].back().maxf = max;
             knobs[index].back().minf = min;
@@ -441,7 +441,7 @@ void ofxControllerBase::knob( int index, ofParameter<int> & param, int min, int 
             knobs[index].back().z1 = (float) param;
         }else{
             ofLogError() << "ofxLaunchControls: wrong indices for knob() function, binding ignored";
-        }     
+        }
     }
 }
 
@@ -498,15 +498,15 @@ void ofxControllerBase::radioChanged( int & value ) {
 }
 
 void ofxControllerBase::buttonChangedB( bool & value ) {
-    bUpdate = true;    
+    bUpdate = true;
 }
 
 void ofxControllerBase::buttonChangedI( int & value ) {
-    bUpdate = true;    
+    bUpdate = true;
 }
 
 void ofxControllerBase::buttonChangedF( float & value ) {
-    bUpdate = true;    
+    bUpdate = true;
 }
 
 void  ofxControllerBase::enableEasing( float speed ){
