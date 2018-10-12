@@ -38,7 +38,7 @@ void ofxControllerBase::setup( int port, int channel ) {
 
 
 void ofxControllerBase::update( ofEventArgs & events ){
-    cout<<"launch controls update is running\n";
+
     if(bUpdate){
 
 		midilock.lock();
