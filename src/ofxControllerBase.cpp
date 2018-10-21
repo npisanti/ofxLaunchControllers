@@ -520,7 +520,7 @@ void  ofxControllerBase::disableEasing(){
 void ofxControllerBase::easing( float speed ) {
 	if( speed>0.0f ){
 		speed = (speed>1.0f) ? 1.0f : speed;
-		enableEasing( easeAmount );
+		enableEasing( speed );
 	}else{
 		disableEasing();
 	}
