@@ -1,4 +1,4 @@
 ofxMidi
-ofxLaunchControls
+ofxLaunchControllers
 ofxGui
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxLaunchControls.h"
+#include "ofxLaunchControllers.h"
 #include "ofxGui.h"
 
 class ofApp : public ofBaseApp{
@@ -10,7 +10,7 @@ public:
     void update();
     void draw();
     void exit();
-    
+
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y);
@@ -22,9 +22,9 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    
+
     ofxLaunchControl lc;
-    
+
     ofxPanel gui;
     ofParameter<bool> testBool;
     ofParameter<float> testFloat0;
@@ -32,5 +32,5 @@ public:
     ofParameter<int> testInt0;
     ofParameter<int> testInt1;
     ofParameter<int> testInt2;
-    ofParameter<int> testInt3;                
+    ofParameter<int> testInt3;
 };
