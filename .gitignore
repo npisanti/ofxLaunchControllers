@@ -26,6 +26,13 @@ docs/tagfile.xml
 # IDE
 #########################
 
+# Visual Studio Code
+.vscode/
+*.code-workspace
+GPATH
+GRTAGS
+GTAGS
+
 # XCode
 *.pbxuser
 *.perspective

@@ -1,5 +1,6 @@
 
 #include "ofxControllerBase.h"
+#include "ofEvent.h"
 
 ofxControllerBase::ofxControllerBase(){
 	name = "launch control";
@@ -37,8 +38,9 @@ void ofxControllerBase::setup( int port, int channel ) {
     bUpdate = false;
 
     clearLeds();
-
-    ofAddListener( ofEvents().update, this, &ofxControllerBase::update);
+    
+    int prio = 0; // OF_EVENT_PRIORITY_BEFORE_APP
+    ofAddListener( ofEvents().update, this, &ofxControllerBase::update, prio );
 }
 
 
