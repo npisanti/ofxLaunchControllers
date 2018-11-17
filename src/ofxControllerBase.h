@@ -65,14 +65,20 @@ protected:
 private:
     void update( ofEventArgs & events ); // update writes changes, use atomics for thread safe control
     
-	mutex midilock;
-
-	void        newMidiMessage( ofxMidiMessage& msg );
-
-    atomic<bool> bUpdate;
+	void newMidiMessage( ofxMidiMessage& msg );
     
-    vector<vector<Binding>> knobs;
-    vector<RadioGroup>    radios;
+    void processMessage( const ofxMidiMessage & msg );
+
+    std::atomic<bool> buttonLedsEnabled;    
+
+    std::vector<ofxMidiMessage> buffer;
+    std::atomic<int> written;
+    int lastRead;
+
+    std::atomic<bool> bUpdate;
+    
+    std::vector<vector<Binding>> knobs;
+    std::vector<RadioGroup>    radios;
     
     int buttonsColor;
     int channel;
@@ -100,9 +106,9 @@ private:
         ofParameter<int> *      pParami;
         ofParameter<bool> *     pParamb;
         
-        atomic<float>           value;
+        std::atomic<float>           value;
         
-        atomic<bool>            bActive;
+        std::atomic<bool>            bActive;
         float                   minf;
         float                   maxf;
         int                     mini;
@@ -120,11 +126,10 @@ private:
         
         int                 min;
         int                 max;
-        atomic<int>         value;
+        std::atomic<int>         value;
         ofParameter<int> *  pParami;
-        atomic<bool>        bUpdate;
+        std::atomic<bool>        bUpdate;
         int                 color;
     };
 
 };
-

@@ -3,6 +3,11 @@
 
 ofxControllerBase::ofxControllerBase(){
 	name = "launch control";
+    
+    buffer.resize( 4096 );
+    written = 0;
+    lastRead = written;
+    buttonLedsEnabled = true;
 }
 
 void ofxControllerBase::listDevices() {
@@ -38,11 +43,20 @@ void ofxControllerBase::setup( int port, int channel ) {
 
 
 void ofxControllerBase::update( ofEventArgs & events ){
+    
+    int read = written;
+    
+    while( lastRead != read ){
+        processMessage( buffer[lastRead] );
+        lastRead++;
+        if( lastRead >= int(buffer.size()) ){
+            lastRead = 0;
+        }
+    }
+
 
     if(bUpdate){
-
-		midilock.lock();
-
+        
 		bUpdate = false;
 
         // buttons update
@@ -130,16 +144,29 @@ void ofxControllerBase::update( ofEventArgs & events ){
             }
         }
 
-        midilock.unlock();
         // update leds
-        refreshLeds();
+        if( buttonLedsEnabled ){ refreshLeds(); } 
     }
 
 }
 
 void ofxControllerBase::newMidiMessage( ofxMidiMessage& msg ) {
 
-    midilock.lock();
+    int write = written;
+    
+    buffer[write] = msg;
+    
+    write++;
+    if(write>=int(buffer.size())){
+        write = 0;
+    }
+    
+    written = write;
+
+}
+
+void  ofxControllerBase::processMessage( const ofxMidiMessage & msg ){
+    
     bUpdate = true;
 
     switch( msg.status ){
@@ -199,7 +226,6 @@ void ofxControllerBase::newMidiMessage( ofxMidiMessage& msg ) {
         default: break;
     }
 
-    midilock.unlock();
 }
 
 
