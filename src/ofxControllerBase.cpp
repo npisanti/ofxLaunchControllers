@@ -509,10 +509,10 @@ void ofxControllerBase::toggle( int index, ofParameter<bool> & param ){
 	button( index, param, false );
 }
 void ofxControllerBase::toggle( int index, ofParameter<float> & param, float min, float max ){
-	button( index, param, false );
+	button( index, param, min, max, false );
 }
 void ofxControllerBase::toggle( int index, ofParameter<int> & param, int min, int max ){
-	button( index, param, false );
+	button( index, param, min, max, false );
 }
 void ofxControllerBase::toggle( int index, ofParameter<float> & param ){
 	button( index, param, false );
