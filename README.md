@@ -1,4 +1,4 @@
-ofxLaunchControls
+ofxLaunchControllers
 =====================================
 
 This addon binds ofParameters floats, ints or bools to a Novation Launch Control or Launch Control XL midi controller. By having a `ofxLaunchControl lc` object binding the first knob to control one of yours parameter isn't harder than:   
