@@ -44,9 +44,15 @@ There's nothing harder then that. Have fun and remember to close you midi contro
    lc.close();
 ```  
    
-
 Requires [ofxMidi](https://github.com/danomatika/ofxMidi).    
    
+Donate
+------------ 
+I support you, you support me!    
+If you find this code useful, consider [fueling me with coffee](https://ko-fi.com/npisanti)!
+   
+License 
+------------   
 Nicola Pisanti, MIT License 2018.   
 
 
