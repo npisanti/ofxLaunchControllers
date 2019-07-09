@@ -1,5 +1,6 @@
 ofxLaunchControllers
 =====================================
+[![Build status](https://travis-ci.org/npisanti/ofxLaunchControllers.svg?branch=master)](https://travis-ci.org/npisanti/ofxLaunchControllers) [![Build status](https://ci.appveyor.com/api/projects/status/10w7io3upmam5rtu?svg=true)](https://ci.appveyor.com/project/npisanti/ofxlaunchcontrollers)
 
 This addon binds ofParameters floats, ints or bools to a Novation Launch Control or Launch Control XL midi controller. By having a `ofxLaunchControl lc` object binding the first knob to control one of yours parameter isn't harder than:   
 ```cpp
