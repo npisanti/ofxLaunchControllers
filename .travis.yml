@@ -189,9 +189,10 @@ matrix:
 install:
   - cd ~
   - git clone --depth=1 --branch=$OF_BRANCH https://github.com/openframeworks/openFrameworks
-  - git clone --depth=1 --branch=master https://github.com/danomatika/ofxMidi openframeworks/addons/ofxMidi
   - cd openFrameworks
   - scripts/ci/addons/install.sh
+  - git clone --depth=1  --branch=master https://github.com/danomatika/ofxMidi addons/ofxMidi
+
 
 script:
   - scripts/ci/addons/build.sh
