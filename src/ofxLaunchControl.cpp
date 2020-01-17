@@ -36,8 +36,7 @@ ofxLaunchControl::ofxLaunchControl(){
 
 }
 
-void ofxLaunchControl::setup(  ){
-	int id = -1;
+void ofxLaunchControl::setup( int id, int channel ){
 	const auto & ports = midiIn.getInPortList();
 	string target = "Launch Control";
 	for( size_t i=0; i<ports.size(); ++i){
@@ -54,7 +53,7 @@ void ofxLaunchControl::setup(  ){
 		}
 	}
 	if(id>=0){
-		ofxControllerBase::setup( id );
+		ofxControllerBase::setup( id, channel );
 	}else{
 		ofLogError()<<"ofxLaunchControls: automatic setup error, Launch Control not found";
 	}
