@@ -6,5 +6,5 @@
 class ofxLaunchControl : public ofxControllerBase {
 public:
 	ofxLaunchControl();
-	void setup();
+	void setup( int id=-1, int channel=9 );
 };
