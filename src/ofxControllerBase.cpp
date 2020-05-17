@@ -199,11 +199,13 @@ void ofxControllerBase::processMessage(const ofxMidiMessage & msg){
          for(size_t i = 0; i < knobs.size(); ++i){
              for(size_t k = 0; k < knobs[i].size(); k++){
                  if(knobs[i][k].typeCode == LC_TYPECODE_VECTOR3 && (msg.control >= knobs[i][k].controlNum || msg.control < knobs[i][k].controlNum + 3)){
-                     int index = msg.control - knobs[i][k].controlNum;
-                     float min = glm::value_ptr(knobs[i][k].minv3)[index];
-                     float max = glm::value_ptr(knobs[i][k].maxv3)[index];
-                     knobs[i][k].values[index] = ofMap(msg.value, 0, 127, min, max);
-                     knobs[i][k].bUpdate = true;
+//                     if(!knobs[i][k].bUpdate.load()) {
+                        int index = msg.control - knobs[i][k].controlNum;
+                        float min = glm::value_ptr(knobs[i][k].minv3)[index];
+                        float max = glm::value_ptr(knobs[i][k].maxv3)[index];
+                        knobs[i][k].values[index].store(ofMap(msg.value, 0, 127, min, max));
+                        knobs[i][k].bUpdate.store(true);
+//                     }
                  }else if(msg.control == knobs[i][k].controlNum && knobs[i][k].typeCode != LC_TYPECODE_UNASSIGNED){
                      switch(knobs[i][k].typeCode){
                       case LC_TYPECODE_FLOAT:
