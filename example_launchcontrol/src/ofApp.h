@@ -33,4 +33,5 @@ public:
     ofParameter<int> testInt1;
     ofParameter<int> testInt2;
     ofParameter<int> testInt3;
+    ofParameter<glm::vec3> testVec3;
 };
