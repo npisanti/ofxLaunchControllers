@@ -9,10 +9,10 @@ void ofApp::setup(){
     gui.add( testFloat0.set( "test float 0 moment", 0.3f, 0.0f, 1.5f) );
     gui.add( testInt0.set( "test int 0 toggle", 2, 0, 150) );
     gui.add( testFloat1.set( "test float 1 knob", 0.3f, 0.0f, 1.5f) );
-    gui.add( testInt1.set( "test int 1 knob",  5, 0, 100 ) );
-    gui.add( testInt2.set( "test int 2 radio", 2, 0, 3   ) );
-    gui.add( testInt3.set( "test int 3 knob again", 0, 0, 100   ) );
-
+    gui.add( testInt1.set( "test int 1 knob",  5, 0, 255 ) );
+    gui.add( testInt2.set( "test int 2 radio", 2, 0, 3 ) );
+    gui.add( testInt3.set( "test int 3 knob again", 0, 0, 100 ) );
+    gui.add( testVec3.set( "test vec3 knobs", glm::vec3(0), glm::vec3(0), glm::vec3(100)) );
 
     // control bindings ------------------------------
     //lc.listDevices();
@@ -30,11 +30,13 @@ void ofApp::setup(){
     
     // index for the knobs are 0-15
     lc.knob( 0, testFloat1 ); // automatically mapped to ofParameter range
-    lc.knob( 8, testInt1, 40, 80 ); // with value range
+    lc.knob( 8, testInt1, 0, 255 ); // with value range
     lc.knob( 8, testInt3, 20, 90 ); // multiple 
-    
+
+    lc.knob3( 5, testVec3, glm::vec3(0), glm::vec3(100)); // multiple
+
     // radio buttons
-    lc.radio( 4, 7, testInt2 );    
+    lc.radio( 4, 7, testInt2, ofxLCLeds::Red, ofxLCLeds::Green);
 }
 
 //--------------------------------------------------------------
@@ -44,7 +46,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(0);
+    ofBackground(testInt1);
     gui.draw();
 }
 
